@@ -10,7 +10,7 @@ class Song:
 class Album:
     def __init__(self, title, songs):
         self.title = title
-        self.songs = [Song(song) for song in songs]
+        self.songs = songs
 
     def __repr__(self):
         return self.title
@@ -18,20 +18,18 @@ class Album:
 class Artist:
     def __init__(self, name, albums):
         self.name = name
-        self.albums = [Album(album['title'], album['songs']) for album in albums]
+        self.albums = albums
 
     def __repr__(self):
         return self.name
 
 class RandomSongGenerator:
-    def __init__(self, artists):
-        self.artists = [Artist(artist['name'], artist['albums']) for artist in artists]
 
-    def get_random_song(self):
-        artist = random.choice(self.artists)
+    def get_random_song(self, artists):
+        artist = random.choice(artists)
         album = random.choice(artist.albums)
         song = random.choice(album.songs)
-        return f"Artist:{artist.name}Album:{album.title}Song:{song}"
+        return f"Artist: {artist.name} Album: {album.title} Song: {song.title}"
 
 
 
@@ -61,5 +59,21 @@ artists_data = {
     }
 }
 
-generator = RandomSongGenerator(artists_data)
-print(generator.get_random_song())
+artists = []
+for a in artists_data:
+    albums = []
+
+    for alb in artists_data[a]:
+        songs = []
+        for s in artists_data[a][alb]:
+            song = Song(s)
+            songs.append(song)
+
+        album = Album(alb, songs)
+        albums.append(album)
+
+    artist = Artist(a, albums)
+    artists.append(artist)
+
+generator = RandomSongGenerator()
+print(generator.get_random_song(artists))
